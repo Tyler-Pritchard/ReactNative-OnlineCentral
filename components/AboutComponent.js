@@ -28,6 +28,7 @@ class About extends Component {
     }
 
     render() {
+        console.log(props)
         const renderPartner = ({item}) => {
             return (
                 <ListItem

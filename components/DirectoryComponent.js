@@ -18,6 +18,7 @@ class Directory extends Component {
     }
 
     render() {
+        console.log(props);
         const { navigate } = this.props.navigation;
         const renderDirectoryItem = ({item}) => {
             return (

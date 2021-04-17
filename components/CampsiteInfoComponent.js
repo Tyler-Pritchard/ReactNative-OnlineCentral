@@ -18,7 +18,7 @@ const mapDispatchToProps = {
 };
 
 function RenderCampsite(props) {
-
+    console.log(props);
     const {campsite} = props;
 
     if (campsite) {
