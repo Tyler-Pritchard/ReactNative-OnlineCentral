@@ -1,23 +1,17 @@
 import React, { Component } from 'react';
-import { FlatList } from 'react-native';
+import { View, FlatList, Text } from 'react-native';
 import { Tile } from 'react-native-elements';
-import { CAMPSITES } from '../shared/campsites';
 import { connect } from 'react-redux';
 import { baseUrl } from '../shared/baseUrl';
+import Loading from './LoadingComponent';
 
 const mapStateToProps = state => {
     return {
         campsites: state.campsites
     };
 };
-class Directory extends Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            campsites: CAMPSITES
-        };
-    }
+class Directory extends Component {
 
     static navigationOptions = {
         title: 'Directory'
@@ -37,6 +31,16 @@ class Directory extends Component {
             );
         };
 
+        if (this.props.campsites.isLoading) {
+            return <Loading />;
+        }
+        if (this.props.campsites.errMess) {
+            return (
+                <View>
+                    <Text>{this.props.campsites.errMess}</Text>
+                </View>
+            );
+        }
         return (
             <FlatList
                 data={this.props.campsites.campsites}
