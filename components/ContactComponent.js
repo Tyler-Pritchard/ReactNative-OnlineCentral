@@ -9,6 +9,7 @@ class Contact extends Component {
     }
 
     render() {
+        
         return (
             <ScrollView>
                 <Card
