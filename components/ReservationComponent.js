@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { Text, View, ScrollView, StyleSheet,
-    Picker, Switch, Button} from 'react-native';
+    Picker, Switch, Button, Alert } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Animatable from 'react-native-animatable';
-import { Alert } from 'react-native';
+import * as Notifications from 'expo-notifications';
 
 class Reservation extends Component {
 
@@ -14,8 +14,7 @@ class Reservation extends Component {
             campers: 1,
             hikeIn: false,
             date: new Date(),
-            showCalendar: false,
-
+            showCalendar: false
         };
     }
 
@@ -26,40 +25,65 @@ class Reservation extends Component {
     handleReservation() {
         console.log(JSON.stringify(this.state));
         const message = `Number of Campers: ${this.state.campers}
-                        \nHike-In?: ${this.state.hikeIn}
-                        \nDate: ${this.state.date.toLocaleDateString('en-us')}`;
+                        \nHike-In? ${this.state.hikeIn}
+                        \nDate: ${this.state.date.toLocaleDateString('en-US')}`;
         Alert.alert(
             'Begin Search?',
             message,
             [
                 {
-                    text: 'Cancel',
+                    text: 'Cancel', 
                     onPress: () => {
-                        console.log('Reservation search cancelled');
+                        console.log('Reservation Search Canceled');
                         this.resetForm();
-                    },
+                    }, 
                     style: 'cancel'
                 },
                 {
-                    text: 'OK',
-                    onPress: () => {this.resetForm();}
-                },
+                    text: 'OK', 
+                    onPress: () => {
+                        this.presentLocalNotification(this.state.date.toLocaleDateString('en-US'));
+                        this.resetForm();
+                    }
+                }
             ],
             { cancelable: false }
         );
-
     }
-
-
 
     resetForm() {
         this.setState({
             campers: 1,
             hikeIn: false,
             date: new Date(),
-            showCalendar: false,
-            showModal: false
+            showCalendar: false
         });
+    }
+
+    async presentLocalNotification(date) {
+        function sendNotification() {
+            Notifications.setNotificationHandler({
+                handleNotification: async () => ({
+                    shouldShowAlert: true
+                })
+            });
+
+            Notifications.scheduleNotificationAsync({
+                content: {
+                    title: 'Your Campsite Reservation Search',
+                    body: `Search for ${date} requested`
+                },
+                trigger: null
+            });
+        }
+
+        let permissions = await Notifications.getPermissionsAsync();
+        if (!permissions.granted) {
+            permissions = await Notifications.requestPermissionsAsync();
+        }
+        if (permissions.granted) {
+            sendNotification();
+        }
     }
 
     render() {
@@ -144,22 +168,6 @@ const styles = StyleSheet.create({
     },
     formItem: {
         flex: 1
-    },
-    modal: {
-        justifyContent: 'center',
-        margin: 20
-    },
-    modalTitle: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        backgroundColor: '#5637DD',
-        textAlign: 'center',
-        color: '#fff',
-        marginBottom: 20
-    },
-    modalText: {
-        fontSize: 18,
-        margin: 10
     }
 });
 
